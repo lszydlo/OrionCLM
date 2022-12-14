@@ -2,8 +2,9 @@ package eu.skillcraft.orionclm.preparation;
 
 import java.time.Clock;
 import java.time.YearMonth;
+import java.util.UUID;
 
-public class ContractNumberFactory {
+public class NumberFactory {
 
   private final AuthPort authPort;
   private final ConfigPort configPort;
@@ -12,7 +13,7 @@ public class ContractNumberFactory {
   private final MoonPhasePort moonPhasePort;
 
 
-  public ContractNumberFactory(AuthPort authPort,
+  public NumberFactory(AuthPort authPort,
       ConfigPort configPort, SequencePort sequencePort, Clock clock,
       MoonPhasePort moonPhasePort) {
     this.authPort = authPort;
@@ -34,12 +35,37 @@ public class ContractNumberFactory {
         authPort.isAuditor(),
         authPort.userType());
   }
+
+  public static class ContractNumber {
+
+    final private String number;
+
+    public ContractNumber(boolean demo, String prefix, String type, Integer next, String phase,
+        YearMonth now, boolean auditor, UserType userType) {
+        if (userType.equals(UserType.BASIC)) {
+          number = getNumber(next);
+        } else  if (userType.equals(UserType.PREMIUM)) {
+          number = getNumber(next) + " " + now.getYear() + "/" + now.getMonthValue();
+        } else  if (userType.equals(UserType.VIP)) {
+          number = prefix + getNumber(next) + " " + now.getYear() + "/" + now.getMonthValue();
+        } else {
+          throw new IllegalStateException("");
+      }
+
+    }
+
+    private String getNumber(Integer next) {
+      return  String.valueOf(Math.addExact(next,3));
+    }
+  }
 }
 
 interface AuthPort {
   boolean isAuditor();
 
-  String userType();
+  UserType userType();
+
+  UUID userId();
 }
 
 interface ConfigPort {
@@ -48,6 +74,9 @@ interface ConfigPort {
   boolean hasPrefix();
 
   String getPrefix();
+
+  NumberConfig getUserNumberConfig(UUID userId);
+
 }
 
 
