@@ -12,8 +12,6 @@ public class ContractNumberFactory {
   private final MoonPhasePort moonPhasePort;
 
 
-
-
   public ContractNumberFactory(AuthPort authPort,
       ConfigPort configPort, SequencePort sequencePort, Clock clock,
       MoonPhasePort moonPhasePort) {
@@ -33,12 +31,15 @@ public class ContractNumberFactory {
         sequencePort.next(),
         moonPhasePort.getPhase(),
         YearMonth.now(clock),
-        authPort.isAuditor());
+        authPort.isAuditor(),
+        authPort.userType());
   }
 }
 
 interface AuthPort {
   boolean isAuditor();
+
+  String userType();
 }
 
 interface ConfigPort {
