@@ -5,11 +5,13 @@ import lombok.NonNull;
 public class PreparationService {
 
   private ContractNumberFactory generator;
+  private NumberGeneratorFactory generatorFactory;
   private ContractRepo repo;
 
   void create(String type) {
 
     ContractNumber number = generator.next(type);
+    ContractNumberB generate = generatorFactory.create().generate(type);
 
     Contract contract  = new Contract(number);
     repo.save(contract);

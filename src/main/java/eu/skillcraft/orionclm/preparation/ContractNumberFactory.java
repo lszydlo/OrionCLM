@@ -11,6 +11,9 @@ public class ContractNumberFactory {
   private final Clock clock;
   private final MoonPhasePort moonPhasePort;
 
+
+
+
   public ContractNumberFactory(AuthPort authPort,
       ConfigPort configPort, SequencePort sequencePort, Clock clock,
       MoonPhasePort moonPhasePort) {
