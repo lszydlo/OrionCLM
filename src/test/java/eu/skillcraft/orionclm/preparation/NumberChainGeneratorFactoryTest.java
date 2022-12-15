@@ -22,7 +22,7 @@ class NumberChainGeneratorFactoryTest {
     // Given
     Mockito.when(sequence.next()).thenReturn(33);
     Mockito.when(config.getPrefix()).thenReturn("PZU");
-    Mockito.when(config.getUserNumberConfig(Mockito.any())).thenReturn(new NumberConfig(List.of("PREFIX")));
+    Mockito.when(config.getUserNumberConfig(Mockito.any())).thenReturn(new NumberConfig(List.of("PREFIX", "DATE")));
     Mockito.when(auth.isAuditor()).thenReturn(true);
     Clock clock = Clock.fixed(ofEpochMilli(0), ZoneId.systemDefault());
 
@@ -40,12 +40,12 @@ class NumberChainGeneratorFactoryTest {
   void should_generate_with_generator() {
 
     ChainNumberGenerator generator = new ChainNumberGenerator(
-        33, new NumberConfig(List.of("PREFIX")), "PZU", YearMonth.of(1970,1)
-    );
+        33, new NumberConfig(List.of("PREFIX", "DATE", "DEMO")), "PZU", YearMonth.of(1970,1),
+        true);
 
     ContractNumberB number = generator.generate("sales");
 
-    assertThat(number.number).isEqualTo("PZU 33 1970/1");
+    assertThat(number.number).isEqualTo("DEMO/ PZU 33 1970/1");
 
 
   }

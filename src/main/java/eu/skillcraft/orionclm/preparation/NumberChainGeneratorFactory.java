@@ -17,19 +17,24 @@ public class NumberChainGeneratorFactory {
   NumberGenerator create() {
     NumberConfig numberConfig = configPort.getUserNumberConfig(authPort.userId());
 
-    return new ChainNumberGenerator(sequencePort.next(),numberConfig, configPort.getPrefix(), YearMonth.now(clock));
+    return new ChainNumberGenerator(sequencePort.next(), numberConfig, configPort.getPrefix(),
+        YearMonth.now(clock),
+        configPort.isDemo());
   }
 
   static class ChainNumberGenerator implements NumberGenerator {
 
     private final NumberToken numberToken;
 
-    public ChainNumberGenerator(Integer seq, NumberConfig numberConfig, String prefix, YearMonth yearMonth) {
+    public ChainNumberGenerator(
+        Integer seq, NumberConfig numberConfig, String prefix, YearMonth yearMonth, boolean isDemo) {
+
       NumberToken basicToken = new BasicToken(seq);
 
       basicToken
           .next(new PrefixToken(numberConfig, prefix))
-          .next(new DateToken(numberConfig, yearMonth));
+          .next(new DateToken(numberConfig, yearMonth))
+          .next(new DemoToken(numberConfig, isDemo));
       this.numberToken = basicToken;
     }
 
@@ -69,56 +74,50 @@ public class NumberChainGeneratorFactory {
     }
   }
 
-  private static class PrefixToken implements NumberToken {
+  private static class PrefixToken extends NumberTokenTemplate {
 
-    private final NumberConfig numberConfig;
     private final String prefix;
-    private NumberToken next;
 
     public PrefixToken(NumberConfig numberConfig, String prefix) {
-      this.numberConfig = numberConfig;
+      super(numberConfig, "PREFIX");
       this.prefix = prefix;
     }
 
     @Override
-    public ContractNumberB generate(String type, ContractNumberB numberB) {
-      if (numberConfig.contains("PREFIX")) {
-        ContractNumberB contractNumberB = numberB.addPrefix(prefix);
-          return next.generate(type, contractNumberB);
-      } else {
-          return next.generate(type, numberB);
-      }
+    protected ContractNumberB getNumber(ContractNumberB numberB) {
+      return numberB.addPrefix(prefix);
     }
 
-    @Override
-    public NumberToken next(NumberToken number) {
-      this.next = number;
-      return next;
-    }
   }
 
-  private static class DateToken implements NumberToken {
+  private static class DateToken extends NumberTokenTemplate {
 
-    private final NumberConfig numberConfig;
     private final YearMonth now;
-    private NumberToken next;
 
     public DateToken(NumberConfig numberConfig, YearMonth now) {
-      this.numberConfig = numberConfig;
+      super(numberConfig, "DATE");
       this.now = now;
     }
 
-    @Override
-    public ContractNumberB generate(String type, ContractNumberB numberB) {
-      return numberB.addPostfix(
-          now.getYear() + "/" + now.getMonthValue());
+    protected ContractNumberB getNumber(ContractNumberB numberB) {
+      return numberB.addPostfix(now.getYear() + "/" + now.getMonthValue());
     }
 
-    @Override
-    public NumberToken next(NumberToken number) {
-      this.next = number;
-      return next;
+  }
+
+  private static class DemoToken extends NumberTokenTemplate {
+
+    private final boolean isDemo;
+
+    public DemoToken(NumberConfig numberConfig, boolean isDemo) {
+      super(numberConfig, "DEMO");
+      this.isDemo = isDemo;
     }
+
+    protected ContractNumberB getNumber(ContractNumberB numberB) {
+      return isDemo ? numberB.addPrefix("DEMO/") : numberB;
+    }
+
   }
 }
 

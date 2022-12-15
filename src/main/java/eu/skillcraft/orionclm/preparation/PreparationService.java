@@ -1,5 +1,6 @@
 package eu.skillcraft.orionclm.preparation;
 
+import eu.skillcraft.orionclm.preparation.ValidatorFactory.ContractValidator;
 import java.util.List;
 import java.util.UUID;
 import lombok.NonNull;
@@ -8,6 +9,7 @@ public class PreparationService {
 
   private NumberFactory generatorFactory;
   private ContractRepo repo;
+  private ValidatorFactory validatorFactory;
 
   void create(String type) {
 
@@ -19,10 +21,9 @@ public class PreparationService {
 
   void update(UUID contractId, String content) {
 
-
     Contract contract  = repo.load(contractId);
-    //CVFalidator cval = validatorFactory.create();
-    contract.update(content);
+    ValidatorFactory.ContractValidator val = validatorFactory.create();
+    contract.update(content, val);
     repo.save(contract);
   }
 
@@ -43,8 +44,8 @@ public class PreparationService {
       this.number = number;
     }
 
-    public void update(String content) {
-//        validationErrors cval.validate(sections);
+    public void update(String content, ContractValidator val) {
+        ValidatorFactory.CValidationErrors errors = val.validate(sections);
     }
   }
 
