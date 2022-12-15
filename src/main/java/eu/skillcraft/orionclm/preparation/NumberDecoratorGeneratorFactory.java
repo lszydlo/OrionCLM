@@ -2,12 +2,10 @@ package eu.skillcraft.orionclm.preparation;
 
 import java.time.Clock;
 import java.time.YearMonth;
-import java.util.List;
 import lombok.AllArgsConstructor;
-import lombok.Value;
 
 @AllArgsConstructor
-public class NumberGeneratorFactory {
+public class NumberDecoratorGeneratorFactory {
 
   private final AuthPort authPort;
   private final ConfigPort configPort;

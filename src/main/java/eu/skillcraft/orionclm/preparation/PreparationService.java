@@ -6,16 +6,14 @@ import lombok.NonNull;
 
 public class PreparationService {
 
-  private NumberFactory factory;
-  private NumberGeneratorFactory generatorFactory;
+  private NumberFactory generatorFactory;
   private ContractRepo repo;
 
   void create(String type) {
 
-    NumberFactory.ContractNumber number = factory.next(type);
-    //ContractNumberB numberB = generatorFactory.create().generate(type);
+    ContractNumberB numberB = generatorFactory.create().generate(type);
 
-    Contract contract  = new Contract(number);
+    Contract contract  = new Contract(numberB);
     repo.save(contract);
   }
 
@@ -38,10 +36,10 @@ public class PreparationService {
 
   static class Contract {
 
-    private final NumberFactory.ContractNumber number;
+    private final ContractNumberB number;
     private List<Section> sections;
 
-    public Contract(@NonNull NumberFactory.ContractNumber number) {
+    public Contract(@NonNull ContractNumberB number) {
       this.number = number;
     }
 

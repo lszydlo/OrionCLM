@@ -17,21 +17,20 @@ public class NumberChainGeneratorFactory {
   NumberGenerator create() {
     NumberConfig numberConfig = configPort.getUserNumberConfig(authPort.userId());
 
-    NumberToken basicToken = new BasicToken(sequencePort.next());
-
-    basicToken
-        .next(new PrefixToken(numberConfig, configPort.getPrefix()))
-        .next(new DateToken(numberConfig, YearMonth.now(clock)));
-
-    return new ChainNumberGenerator(basicToken);
+    return new ChainNumberGenerator(sequencePort.next(),numberConfig, configPort.getPrefix(), YearMonth.now(clock));
   }
 
   static class ChainNumberGenerator implements NumberGenerator {
 
     private final NumberToken numberToken;
 
-    public ChainNumberGenerator(NumberToken numberToken) {
-      this.numberToken = numberToken;
+    public ChainNumberGenerator(Integer seq, NumberConfig numberConfig, String prefix, YearMonth yearMonth) {
+      NumberToken basicToken = new BasicToken(seq);
+
+      basicToken
+          .next(new PrefixToken(numberConfig, prefix))
+          .next(new DateToken(numberConfig, yearMonth));
+      this.numberToken = basicToken;
     }
 
     @Override
