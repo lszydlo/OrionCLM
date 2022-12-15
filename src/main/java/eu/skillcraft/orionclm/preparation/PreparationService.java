@@ -23,6 +23,7 @@ public class PreparationService {
 
 
     Contract contract  = repo.load(contractId);
+    //CVFalidator cval = validatorFactory.create();
     contract.update(content);
     repo.save(contract);
   }
@@ -45,7 +46,7 @@ public class PreparationService {
     }
 
     public void update(String content) {
-
+//        validationErrors cval.validate(sections);
     }
   }
 
