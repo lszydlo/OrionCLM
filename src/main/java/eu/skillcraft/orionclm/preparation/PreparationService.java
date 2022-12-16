@@ -4,7 +4,6 @@ import eu.skillcraft.orionclm.preparation.ValidatorFactory.ContractValidator;
 import java.util.List;
 import java.util.UUID;
 import lombok.NonNull;
-import org.springframework.boot.autoconfigure.jms.JmsProperties.Template;
 
 public class PreparationService {
 
